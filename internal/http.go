@@ -13,7 +13,7 @@ func DecodeParameterID(c echo.Context, p string) (primitive.ObjectID, error) {
 
 	id, err := primitive.ObjectIDFromHex(c.Param(p))
 	if err != nil {
-		return id, NewBackendError(ErrBEMongoIDCast, err, 2)
+		return id, NewError(ErrBEMongoIDCast, err, 2)
 	}
 
 	return id, nil
@@ -25,12 +25,12 @@ func DecodeQueryParameterID(q url.Values, p string) (primitive.ObjectID, error) 
 
 	rawID := q.Get(p)
 	if rawID == "" {
-		return id, NewBackendError(ErrBEMongoIDEmpty, nil, 2)
+		return id, NewError(ErrBEMongoIDEmpty, nil, 2)
 	}
 
 	id, err := primitive.ObjectIDFromHex(rawID)
 	if err != nil {
-		return id, NewBackendError(ErrBEMongoIDCast, err, 2)
+		return id, NewError(ErrBEMongoIDCast, err, 2)
 	}
 
 	return id, nil

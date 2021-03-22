@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	"echo_rest_api/pkg/internal"
-
 	"github.com/labstack/echo/v4"
+
+	"echo_rest_api/internal"
 )
 
 type (
@@ -30,7 +30,7 @@ func (h *Handler) CacheTest(c echo.Context) error {
 	k := qp.Get("key")
 	v := qp.Get("value")
 	if k == "" {
-		return internal.NewBackendError(internal.ErrBEQPMissing, nil, 1)
+		return internal.NewError(internal.ErrBEQPMissing, nil, 1)
 	}
 
 	// Instantiate a tester object
@@ -41,7 +41,7 @@ func (h *Handler) CacheTest(c echo.Context) error {
 
 	if !exists {
 		if v == "" {
-			return internal.NewBackendError(internal.ErrBEQPMissing, nil, 1)
+			return internal.NewError(internal.ErrBEQPMissing, nil, 1)
 		}
 
 		// Save the key-value pair

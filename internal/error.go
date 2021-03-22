@@ -19,8 +19,7 @@ type (
 		Message  string
 		Original error
 	}
-	BackendError  customError
-	DatabaseError customError
+	Error customError
 )
 
 const (
@@ -56,12 +55,12 @@ const (
 	ErrDBNoUpdate      = "No data found to be updated in MongoDB query"
 )
 
-// Create a new BackendError
-func NewBackendError(message string, original error, skip int) *BackendError {
+// Create a new backend Error
+func NewError(message string, original error, skip int) *Error {
 	// Generate the error location
 	_, file, line, _ := runtime.Caller(skip)
 
-	return &BackendError{
+	return &Error{
 		Location: &errorLocation{
 			File: file,
 			Line: line,
@@ -72,32 +71,12 @@ func NewBackendError(message string, original error, skip int) *BackendError {
 }
 
 // Error function for error interface
-func (e *BackendError) Error() string {
+func (e *Error) Error() string {
 	return e.Message
 }
 
-// Create a new DatabaseError
-func NewDatabaseError(message string, original error, skip int) *DatabaseError {
-	// Generate the error location
-	_, file, line, _ := runtime.Caller(skip)
-
-	return &DatabaseError{
-		Location: &errorLocation{
-			File: file,
-			Line: line,
-		},
-		Message:  message,
-		Original: original,
-	}
-}
-
-// Error function for error interface
-func (e *DatabaseError) Error() string {
-	return e.Message
-}
-
-// Error handler with a custom response for Echo instance
-func EchoErrorHandler(err error, c echo.Context) {
+// Error handler with a custom response for the Echo instance
+func ErrorHandler(err error, c echo.Context) {
 	// Check if response not already sent to requester
 	if !c.Response().Committed {
 		// Create the default values for response code and message
@@ -118,7 +97,7 @@ func EchoErrorHandler(err error, c echo.Context) {
 				message += fmt.Sprintf("field validation for '%s' failed on the '%s' tag;", v.Field(), v.ActualTag())
 			}
 
-		case *BackendError: // Handle a echo_rest_api error
+		case *Error: // Handle a backend error
 			// Log the error
 			c.Logger().Errorf(
 				"BackendError :: File:%s - Line:%d :: %s -> %v", e.Location.File, e.Location.Line, e.Message, e.Original,
@@ -128,30 +107,17 @@ func EchoErrorHandler(err error, c echo.Context) {
 			message = e.Message
 
 			switch message {
+			case ErrDBNoData, ErrDBNoUpdate:
+				code = http.StatusNotFound
 			case ErrBEInvalidPassword, ErrBENotAdmin:
 				code = http.StatusUnauthorized
-			case ErrBEEmail, ErrBEHashSalt, ErrBEMongoIDCast, ErrBETimeConversion:
+			case ErrBEEmail, ErrBEHashSalt, ErrBEMongoIDCast, ErrBETimeConversion,
+				ErrDBCursorClose, ErrDBCursorIterate, ErrDBDecode, ErrDBDelete, ErrDBInsert, ErrDBQuery, ErrDBUpdate:
 				code = http.StatusInternalServerError
 			case ErrBEInvalidInvite, ErrBEMongoIDEmpty, ErrBEUserExists,
 				ErrBEQPInvalidChartType, ErrBEQPInvalidDateTime, ErrBEQPInvalidIsInside, ErrBEQPInvalidIntervalType,
 				ErrBEQPInvalidLocation, ErrBEQPInvalidMobile, ErrBEQPInvalidTimezone, ErrBEQPMissing, ErrBEQPNoRawOnGate:
 				code = http.StatusBadRequest
-			}
-
-		case *DatabaseError: // Handle a database error
-			// Log the error
-			c.Logger().Errorf(
-				"DatabaseError :: File:%s - Line:%d :: %s -> %v", e.Location.File, e.Location.Line, e.Message, e.Original,
-			)
-
-			// Construct the response
-			message = e.Message
-
-			switch message {
-			case ErrDBNoData, ErrDBNoUpdate:
-				code = http.StatusNotFound
-			case ErrDBCursorClose, ErrDBCursorIterate, ErrDBDecode, ErrDBDelete, ErrDBInsert, ErrDBQuery, ErrDBUpdate:
-				code = http.StatusInternalServerError
 			}
 		}
 

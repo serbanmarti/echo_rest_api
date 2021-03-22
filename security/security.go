@@ -1,10 +1,10 @@
 package security
 
 import (
-	"echo_rest_api/pkg/internal"
-
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+
+	"echo_rest_api/internal"
 )
 
 func ConfigureEchoSecurity(e *echo.Echo, env *internal.Environ) {

@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"echo_rest_api/pkg/internal"
-
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
+
+	"echo_rest_api/internal"
 )
 
 func configureEcho(e *echo.Echo, env *internal.Environ) {
@@ -42,7 +42,7 @@ func configureEcho(e *echo.Echo, env *internal.Environ) {
 	e.Validator = v
 
 	// Configure Echo error handler
-	e.HTTPErrorHandler = internal.EchoErrorHandler
+	e.HTTPErrorHandler = internal.ErrorHandler
 
 	// Set a schema for the FE endpoint
 	var schema string

@@ -6,11 +6,11 @@ import (
 	"sort"
 	"time"
 
-	"echo_rest_api/pkg/internal"
-
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+
+	"echo_rest_api/internal"
 )
 
 type (
@@ -158,7 +158,7 @@ func StatsGetGate(m *mongo.Database, sq *Stats) error {
 		},
 	})
 	if err != nil {
-		return internal.NewDatabaseError(internal.ErrDBQuery, err, 1)
+		return internal.NewError(internal.ErrDBQuery, err, 1)
 	}
 
 	// Instantiate the entered and exited chart entries
@@ -183,7 +183,7 @@ func StatsGetGate(m *mongo.Database, sq *Stats) error {
 
 		err = cur.Decode(&row)
 		if err != nil {
-			return internal.NewDatabaseError(internal.ErrDBDecode, err, 1)
+			return internal.NewError(internal.ErrDBDecode, err, 1)
 		}
 
 		// Convert the retrieved DB date to a date string
@@ -221,17 +221,17 @@ func StatsGetGate(m *mongo.Database, sq *Stats) error {
 
 	// Check if any errors occurred
 	if err = cur.Err(); err != nil {
-		return internal.NewDatabaseError(internal.ErrDBCursorIterate, err, 1)
+		return internal.NewError(internal.ErrDBCursorIterate, err, 1)
 	}
 
 	// Close the cursor once finished
 	if err = cur.Close(context.TODO()); err != nil {
-		return internal.NewDatabaseError(internal.ErrDBCursorClose, err, 1)
+		return internal.NewError(internal.ErrDBCursorClose, err, 1)
 	}
 
 	// Check if any data found
 	if len(sq.Data) == 0 {
-		return internal.NewDatabaseError(internal.ErrDBNoData, err, 1)
+		return internal.NewError(internal.ErrDBNoData, err, 1)
 	}
 
 	return nil
@@ -309,7 +309,7 @@ func StatsGetSpace(m *mongo.Database, sq *Stats) error {
 		},
 	})
 	if err != nil {
-		return internal.NewDatabaseError(internal.ErrDBQuery, err, 1)
+		return internal.NewError(internal.ErrDBQuery, err, 1)
 	}
 
 	// Instantiate the max count chart entry
@@ -327,7 +327,7 @@ func StatsGetSpace(m *mongo.Database, sq *Stats) error {
 
 		err = cur.Decode(&row)
 		if err != nil {
-			return internal.NewDatabaseError(internal.ErrDBDecode, err, 1)
+			return internal.NewError(internal.ErrDBDecode, err, 1)
 		}
 
 		// Convert the retrieved DB date to a date string
@@ -356,17 +356,17 @@ func StatsGetSpace(m *mongo.Database, sq *Stats) error {
 
 	// Check if any errors occurred
 	if err = cur.Err(); err != nil {
-		return internal.NewDatabaseError(internal.ErrDBCursorIterate, err, 1)
+		return internal.NewError(internal.ErrDBCursorIterate, err, 1)
 	}
 
 	// Close the cursor once finished
 	if err = cur.Close(context.TODO()); err != nil {
-		return internal.NewDatabaseError(internal.ErrDBCursorClose, err, 1)
+		return internal.NewError(internal.ErrDBCursorClose, err, 1)
 	}
 
 	// Check if any data found
 	if len(sq.Data) == 0 {
-		return internal.NewDatabaseError(internal.ErrDBNoData, err, 1)
+		return internal.NewError(internal.ErrDBNoData, err, 1)
 	}
 
 	return nil
@@ -381,7 +381,7 @@ func dateToString(sd *StatsDataPointRaw, tOff int, mt string) (string, error) {
 	)
 	ct, err := time.Parse("2006-1-2 15:4:5", tStr)
 	if err != nil {
-		return "", internal.NewBackendError(internal.ErrBETimeConversion, err, 2)
+		return "", internal.NewError(internal.ErrBETimeConversion, err, 2)
 	}
 
 	// Apply the given timezone offset

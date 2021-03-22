@@ -3,12 +3,12 @@ package model
 import (
 	"context"
 
-	"echo_rest_api/pkg/internal"
-	"echo_rest_api/pkg/security"
-
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+
+	"echo_rest_api/internal"
+	"echo_rest_api/security"
 )
 
 type (
@@ -68,10 +68,10 @@ func UserFind(m *mongo.Database, u *User) error {
 
 	if err := db.FindOne(context.TODO(), bson.M{"email": u.Email}).Decode(&u); err != nil {
 		if err == mongo.ErrNoDocuments {
-			return internal.NewDatabaseError(internal.ErrDBNoData, err, 1)
+			return internal.NewError(internal.ErrDBNoData, err, 1)
 		}
 
-		return internal.NewDatabaseError(internal.ErrDBQuery, err, 1)
+		return internal.NewError(internal.ErrDBQuery, err, 1)
 	}
 
 	// Create the hashed password for the current user
@@ -79,7 +79,7 @@ func UserFind(m *mongo.Database, u *User) error {
 
 	// Check if hashed passwords match
 	if u.Password != hashedPassword {
-		return internal.NewBackendError(internal.ErrBEInvalidPassword, nil, 1)
+		return internal.NewError(internal.ErrBEInvalidPassword, nil, 1)
 	}
 
 	return nil
@@ -92,7 +92,7 @@ func UserFindRoot(m *mongo.Database, email string) (bool, error) {
 
 	count, err := db.CountDocuments(context.TODO(), bson.M{"email": email})
 	if err != nil && err != mongo.ErrNoDocuments {
-		return false, internal.NewDatabaseError(internal.ErrDBQuery, err, 1)
+		return false, internal.NewError(internal.ErrDBQuery, err, 1)
 	}
 
 	if count > 0 {
@@ -109,11 +109,11 @@ func UserEmailExists(m *mongo.Database, i *Invite) error {
 
 	count, err := db.CountDocuments(context.TODO(), bson.M{"email": i.Email})
 	if err != nil && err != mongo.ErrNoDocuments {
-		return internal.NewDatabaseError(internal.ErrDBQuery, err, 1)
+		return internal.NewError(internal.ErrDBQuery, err, 1)
 	}
 
 	if count > 0 {
-		return internal.NewBackendError(internal.ErrBEUserExists, nil, 1)
+		return internal.NewError(internal.ErrBEUserExists, nil, 1)
 	}
 
 	return nil
@@ -127,7 +127,7 @@ func UserCreate(m *mongo.Database, u *User) error {
 	// Add the user to the DB
 	newUser, err := db.InsertOne(context.TODO(), u)
 	if err != nil {
-		return internal.NewDatabaseError(internal.ErrDBInsert, err, 1)
+		return internal.NewError(internal.ErrDBInsert, err, 1)
 	}
 
 	// Save the ID of the new user
@@ -136,7 +136,7 @@ func UserCreate(m *mongo.Database, u *User) error {
 	// Update the creating user
 	_, err = db.UpdateOne(context.TODO(), bson.M{"_id": u.CreatedBy}, bson.M{"$push": bson.M{"created_users": u.ID}})
 	if err != nil {
-		return internal.NewDatabaseError(internal.ErrDBUpdate, err, 1)
+		return internal.NewError(internal.ErrDBUpdate, err, 1)
 	}
 
 	return nil
@@ -150,7 +150,7 @@ func UserCreateRoot(m *mongo.Database, u *User) error {
 	// Add the user to the DB
 	_, err := db.InsertOne(context.TODO(), u)
 	if err != nil {
-		return internal.NewDatabaseError(internal.ErrDBInsert, err, 1)
+		return internal.NewError(internal.ErrDBInsert, err, 1)
 	}
 
 	return nil
@@ -163,11 +163,11 @@ func UserValidateInvite(m *mongo.Database, i *ValidateInvite) error {
 
 	count, err := db.CountDocuments(context.TODO(), bson.M{"invite_token": i.InviteToken})
 	if err != nil && err != mongo.ErrNoDocuments {
-		return internal.NewDatabaseError(internal.ErrDBQuery, err, 1)
+		return internal.NewError(internal.ErrDBQuery, err, 1)
 	}
 
 	if count == 0 {
-		return internal.NewBackendError(internal.ErrBEInvalidInvite, nil, 1)
+		return internal.NewError(internal.ErrBEInvalidInvite, nil, 1)
 	}
 
 	return nil
@@ -183,7 +183,7 @@ func UserSignUp(m *mongo.Database, s *SignUp) error {
 		"$unset": bson.M{"invite_token": ""},
 	})
 	if err != nil {
-		return internal.NewDatabaseError(internal.ErrDBUpdate, err, 1)
+		return internal.NewError(internal.ErrDBUpdate, err, 1)
 	}
 
 	return nil
@@ -199,7 +199,7 @@ func UserGetAll(m *mongo.Database, id primitive.ObjectID) ([]UserMinimalData, er
 	// Find all users, except for the given ID
 	cur, err := db.Find(context.TODO(), bson.M{"_id": bson.M{"$ne": id}})
 	if err != nil {
-		return nil, internal.NewDatabaseError(internal.ErrDBQuery, err, 1)
+		return nil, internal.NewError(internal.ErrDBQuery, err, 1)
 	}
 
 	// Decode all found information
@@ -208,7 +208,7 @@ func UserGetAll(m *mongo.Database, id primitive.ObjectID) ([]UserMinimalData, er
 
 		err = cur.Decode(&elem)
 		if err != nil {
-			return nil, internal.NewDatabaseError(internal.ErrDBDecode, err, 1)
+			return nil, internal.NewError(internal.ErrDBDecode, err, 1)
 		}
 
 		u = append(u, elem)
@@ -216,17 +216,17 @@ func UserGetAll(m *mongo.Database, id primitive.ObjectID) ([]UserMinimalData, er
 
 	// Check if any errors occurred
 	if err = cur.Err(); err != nil {
-		return nil, internal.NewDatabaseError(internal.ErrDBCursorIterate, err, 1)
+		return nil, internal.NewError(internal.ErrDBCursorIterate, err, 1)
 	}
 
 	// Close the cursor once finished
 	if err = cur.Close(context.TODO()); err != nil {
-		return nil, internal.NewDatabaseError(internal.ErrDBCursorClose, err, 1)
+		return nil, internal.NewError(internal.ErrDBCursorClose, err, 1)
 	}
 
 	// Check if any data found
 	if len(u) == 0 {
-		return nil, internal.NewDatabaseError(internal.ErrDBNoData, err, 1)
+		return nil, internal.NewError(internal.ErrDBNoData, err, 1)
 	}
 
 	return u, nil
@@ -242,12 +242,12 @@ func UserUpdate(m *mongo.Database, u *UserUpdateData) error {
 		"$set": bson.M{"active": u.Active, "role": u.Role},
 	})
 	if err != nil {
-		return internal.NewDatabaseError(internal.ErrDBUpdate, err, 1)
+		return internal.NewError(internal.ErrDBUpdate, err, 1)
 	}
 
 	// If no data was updated, return an error
 	if r.ModifiedCount == 0 {
-		return internal.NewDatabaseError(internal.ErrDBNoUpdate, err, 1)
+		return internal.NewError(internal.ErrDBNoUpdate, err, 1)
 	}
 
 	return nil
@@ -261,7 +261,7 @@ func UserDelete(m *mongo.Database, id primitive.ObjectID) error {
 	// Delete the user from the DB
 	_, err := db.DeleteOne(context.TODO(), bson.M{"_id": id})
 	if err != nil {
-		return internal.NewDatabaseError(internal.ErrDBDelete, err, 1)
+		return internal.NewError(internal.ErrDBDelete, err, 1)
 	}
 
 	return nil
