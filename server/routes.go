@@ -1,10 +1,10 @@
 package server
 
 import (
-	"echo_rest_api/pkg/server/handler"
-
 	"github.com/labstack/echo/v4"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+
+	"echo_rest_api/server/handler"
 )
 
 func assignRoutesAndHandlers(e *echo.Echo, h *handler.Handler) {

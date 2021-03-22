@@ -22,7 +22,7 @@ func DecodeClaims(c echo.Context) *JWTClaims {
 // Check if the logged in user has admin rights
 func (c *JWTClaims) IsAdmin() error {
 	if c.Role != "admin" {
-		return NewBackendError(ErrBENotAdmin, nil, 2)
+		return NewError(ErrBENotAdmin, nil, 2)
 	}
 
 	return nil
@@ -33,7 +33,7 @@ func (c *JWTClaims) GetUserID() (primitive.ObjectID, error) {
 	// Convert the ID into a proper ObjectID
 	id, err := primitive.ObjectIDFromHex(c.Id)
 	if err != nil {
-		return id, NewBackendError(ErrBEMongoIDCast, nil, 2)
+		return id, NewError(ErrBEMongoIDCast, nil, 2)
 	}
 
 	return id, nil

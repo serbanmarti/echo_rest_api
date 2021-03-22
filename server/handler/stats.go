@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"time"
 
-	"echo_rest_api/pkg/internal"
-	"echo_rest_api/pkg/model"
-
 	"github.com/labstack/echo/v4"
+
+	"echo_rest_api/database/model"
+	"echo_rest_api/internal"
 )
 
 const (
@@ -33,11 +33,11 @@ func (h *Handler) StatsGetData(c echo.Context) (err error) {
 	// Parse interval dates
 	s, err := time.Parse(time.RFC3339, qp.Get("start"))
 	if err != nil {
-		return internal.NewBackendError(internal.ErrBEQPInvalidDateTime, nil, 1)
+		return internal.NewError(internal.ErrBEQPInvalidDateTime, nil, 1)
 	}
 	e, err := time.Parse(time.RFC3339, qp.Get("end"))
 	if err != nil {
-		return internal.NewBackendError(internal.ErrBEQPInvalidDateTime, nil, 1)
+		return internal.NewError(internal.ErrBEQPInvalidDateTime, nil, 1)
 	}
 
 	// Parse timezone
@@ -47,25 +47,25 @@ func (h *Handler) StatsGetData(c echo.Context) (err error) {
 		if err == nil {
 			err = fmt.Errorf("invalid timezone offset value: %d", t)
 		}
-		return internal.NewBackendError(internal.ErrBEQPInvalidTimezone, err, 1)
+		return internal.NewError(internal.ErrBEQPInvalidTimezone, err, 1)
 	}
 
 	// Parse location
 	l := qp.Get("location")
 	if l == "" || !internal.InSlice(l, []string{gate, "space"}) {
-		return internal.NewBackendError(internal.ErrBEQPInvalidLocation, nil, 1)
+		return internal.NewError(internal.ErrBEQPInvalidLocation, nil, 1)
 	}
 
 	// Parse chart type
 	ct := qp.Get("chartType")
 	if ct == "" || !internal.InSlice(ct, []string{"area", "line", "spline", "column", "stackedColumn", "bar"}) {
-		return internal.NewBackendError(internal.ErrBEQPInvalidChartType, nil, 1)
+		return internal.NewError(internal.ErrBEQPInvalidChartType, nil, 1)
 	}
 
 	// Parse interval type
 	it := qp.Get("intervalType")
 	if it == "" || !internal.InSlice(it, []string{none, hour, "day", "month", "year"}) {
-		return internal.NewBackendError(internal.ErrBEQPInvalidIntervalType, nil, 1)
+		return internal.NewError(internal.ErrBEQPInvalidIntervalType, nil, 1)
 	}
 
 	// Parse isInside
@@ -73,18 +73,18 @@ func (h *Handler) StatsGetData(c echo.Context) (err error) {
 	inRaw := qp.Get("isInside")
 	if l == gate {
 		if inRaw == "" {
-			return internal.NewBackendError(internal.ErrBEQPInvalidIsInside, nil, 1)
+			return internal.NewError(internal.ErrBEQPInvalidIsInside, nil, 1)
 		}
 
 		in, err = strconv.ParseBool(inRaw)
 		if err != nil {
-			return internal.NewBackendError(internal.ErrBEQPInvalidIsInside, nil, 1)
+			return internal.NewError(internal.ErrBEQPInvalidIsInside, nil, 1)
 		}
 	}
 
 	// Check if trying to get raw data from a gate
 	if it == none && l == gate {
-		return internal.NewBackendError(internal.ErrBEQPNoRawOnGate, nil, 1)
+		return internal.NewError(internal.ErrBEQPNoRawOnGate, nil, 1)
 	}
 
 	// Build format for X axis

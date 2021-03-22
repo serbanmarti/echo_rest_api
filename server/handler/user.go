@@ -5,15 +5,15 @@ import (
 	"strconv"
 	"time"
 
-	"echo_rest_api/pkg/internal"
-	"echo_rest_api/pkg/model"
-	"echo_rest_api/pkg/security"
-
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gopkg.in/gomail.v2"
+
+	"echo_rest_api/database/model"
+	"echo_rest_api/internal"
+	"echo_rest_api/security"
 )
 
 // GET
@@ -60,7 +60,7 @@ func (h *Handler) Login(c echo.Context) (err error) {
 
 	// Check if the account is active
 	if !u.Active {
-		return internal.NewBackendError(internal.ErrBENotActive, nil, 1)
+		return internal.NewError(internal.ErrBENotActive, nil, 1)
 	}
 
 	// Remove the password from memory (this is returned to the requester)
@@ -75,7 +75,7 @@ func (h *Handler) Login(c echo.Context) (err error) {
 	if mRaw != "" {
 		m, err = strconv.ParseBool(mRaw)
 		if err != nil {
-			return internal.NewBackendError(internal.ErrBEQPInvalidMobile, nil, 1)
+			return internal.NewError(internal.ErrBEQPInvalidMobile, nil, 1)
 		}
 	}
 
@@ -177,7 +177,7 @@ func (h *Handler) Invite(c echo.Context) (err error) {
 
 		d := gomail.NewDialer(h.SMTP.Host, h.SMTP.Port, h.SMTP.User, h.SMTP.Pass)
 		if err := d.DialAndSend(m); err != nil {
-			return internal.NewBackendError(internal.ErrBEEmail, err, 1)
+			return internal.NewError(internal.ErrBEEmail, err, 1)
 		}
 	}
 

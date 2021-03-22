@@ -4,14 +4,14 @@ import (
 	"context"
 	"time"
 
-	"echo_rest_api/pkg/database"
-	"echo_rest_api/pkg/internal"
-	"echo_rest_api/pkg/security"
-	"echo_rest_api/pkg/server/handler"
-
 	"github.com/ReneKroon/ttlcache"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/mongo"
+
+	"echo_rest_api/database"
+	"echo_rest_api/internal"
+	"echo_rest_api/security"
+	"echo_rest_api/server/handler"
 )
 
 // Initialize a Echo server and DB connection
@@ -22,7 +22,7 @@ func InitServer() (*echo.Echo, *mongo.Client) {
 	// Get configuration from environment
 	env, err := internal.GetEnv()
 	if err != nil {
-		e.Logger.Fatal(err)
+		e.Logger.Fatalf("Failed to get environment variables: %s", err)
 	}
 
 	// Configure the Echo instance

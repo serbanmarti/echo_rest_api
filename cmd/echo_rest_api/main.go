@@ -7,7 +7,7 @@ import (
 	"syscall"
 	"time"
 
-	"echo_rest_api/pkg/server"
+	"echo_rest_api/server"
 )
 
 func main() {
@@ -25,7 +25,7 @@ func main() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM)
 	<-quit
-	e.Logger.Info("gracefully shutting down the server")
+	e.Logger.Info("Gracefully shutting down the server")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err := db.Disconnect(context.TODO()); err != nil {

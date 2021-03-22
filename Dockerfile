@@ -1,4 +1,4 @@
-FROM golang:1.14.6-alpine3.11
+FROM golang:1.16.2-alpine3.12
 
 # Set the workdir
 WORKDIR /app
@@ -14,7 +14,7 @@ RUN go mod download
 COPY . .
 
 # Build the application executable
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o /app/backend /app/cmd/backend/main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o /app/backend /app/cmd/echo_rest_api/main.go
 
 ENV INST_PORT=80
 EXPOSE 80
