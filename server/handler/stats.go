@@ -19,7 +19,7 @@ const (
 
 // GET
 
-// Get stats data for a given location
+// StatsGetData gets stats data for a given location
 func (h *Handler) StatsGetData(c echo.Context) (err error) {
 	// Get input query parameters
 	qp := c.QueryParams()

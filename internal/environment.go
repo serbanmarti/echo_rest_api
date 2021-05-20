@@ -25,7 +25,7 @@ type (
 	}
 )
 
-// Get required environment variables
+// GetEnv gets required environment variables
 func GetEnv() (*Environ, error) {
 	e := new(Environ)
 

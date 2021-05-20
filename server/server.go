@@ -14,7 +14,7 @@ import (
 	"echo_rest_api/server/handler"
 )
 
-// Initialize a Echo server and DB connection
+// InitServer initializes an Echo server and DB connection
 func InitServer() (*echo.Echo, *mongo.Client) {
 	// Create a new Echo instance
 	e := echo.New()

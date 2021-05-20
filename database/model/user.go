@@ -58,7 +58,7 @@ const (
 	usersCollectionName = "users"
 )
 
-// Check if a user is found based on given email and password in the DB
+// UserFind checks if a user is found based on given email and password in the DB
 func UserFind(m *mongo.Database, u *User) error {
 	// Save the raw password for later use
 	rawPassword := u.Password
@@ -85,7 +85,7 @@ func UserFind(m *mongo.Database, u *User) error {
 	return nil
 }
 
-// Check if the root user account is already available in the DB
+// UserFindRoot checks if the root user account is already available in the DB
 func UserFindRoot(m *mongo.Database, email string) (bool, error) {
 	// Create a DB connection
 	db := m.Collection(usersCollectionName)
@@ -102,7 +102,7 @@ func UserFindRoot(m *mongo.Database, email string) (bool, error) {
 	return false, nil
 }
 
-// Check if a user account is already registered to a given email in the DB
+// UserEmailExists checks if a user account is already registered to a given email in the DB
 func UserEmailExists(m *mongo.Database, i *Invite) error {
 	// Create a DB connection
 	db := m.Collection(usersCollectionName)
@@ -119,7 +119,7 @@ func UserEmailExists(m *mongo.Database, i *Invite) error {
 	return nil
 }
 
-// Create a new user in the DB
+// UserCreate creates a new user in the DB
 func UserCreate(m *mongo.Database, u *User) error {
 	// Create a DB connection
 	db := m.Collection(usersCollectionName)
@@ -142,7 +142,7 @@ func UserCreate(m *mongo.Database, u *User) error {
 	return nil
 }
 
-// Create a new root user in the DB
+// UserCreateRoot creates a new root user in the DB
 func UserCreateRoot(m *mongo.Database, u *User) error {
 	// Create a DB connection
 	db := m.Collection(usersCollectionName)
@@ -156,7 +156,7 @@ func UserCreateRoot(m *mongo.Database, u *User) error {
 	return nil
 }
 
-// Check if an invite token is still available in the DB
+// UserValidateInvite checks if an invite token is still available in the DB
 func UserValidateInvite(m *mongo.Database, i *ValidateInvite) error {
 	// Create a DB connection
 	db := m.Collection(usersCollectionName)
@@ -173,7 +173,7 @@ func UserValidateInvite(m *mongo.Database, i *ValidateInvite) error {
 	return nil
 }
 
-// Activate an invited account and set the password and salt in the DB
+// UserSignUp activates an invited account and set the password and salt in the DB
 func UserSignUp(m *mongo.Database, s *SignUp) error {
 	// Create a DB connection
 	db := m.Collection(usersCollectionName)
@@ -189,7 +189,7 @@ func UserSignUp(m *mongo.Database, s *SignUp) error {
 	return nil
 }
 
-// Retrieve all users (except from the given ID) from the DB
+// UserGetAll retrieves all users (except from the given ID) from the DB
 func UserGetAll(m *mongo.Database, id primitive.ObjectID) ([]UserMinimalData, error) {
 	var u []UserMinimalData
 
@@ -232,7 +232,7 @@ func UserGetAll(m *mongo.Database, id primitive.ObjectID) ([]UserMinimalData, er
 	return u, nil
 }
 
-// Update a given user data in the DB
+// UserUpdate updates a given user data in the DB
 func UserUpdate(m *mongo.Database, u *UserUpdateData) error {
 	// Create a DB connection
 	db := m.Collection(usersCollectionName)
@@ -253,7 +253,7 @@ func UserUpdate(m *mongo.Database, u *UserUpdateData) error {
 	return nil
 }
 
-// Delete a user based on the given ID in the DB
+// UserDelete deletes a user based on the given ID in the DB
 func UserDelete(m *mongo.Database, id primitive.ObjectID) error {
 	// Create a DB connection
 	db := m.Collection(usersCollectionName)

@@ -17,7 +17,7 @@ var (
 	roles = []string{"admin", "user"}
 )
 
-// Create a new input data validator instance
+// CreateValidator creates a new input data validator instance
 func CreateValidator() (*Validator, error) {
 	v := validator.New()
 

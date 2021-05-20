@@ -1,4 +1,4 @@
-FROM golang:1.16.2-alpine3.12
+FROM golang:1.16.4-alpine3.12
 
 # Set the workdir
 WORKDIR /app
@@ -17,6 +17,6 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o /app/backend /app/cmd/echo_rest_api/main.go
 
 ENV INST_PORT=80
-EXPOSE 80
+EXPOSE $INST_PORT
 # Set the entry point for running container
 ENTRYPOINT ["/app/backend"]

@@ -55,7 +55,7 @@ const (
 	ErrDBNoUpdate      = "No data found to be updated in MongoDB query"
 )
 
-// Create a new backend Error
+// NewError creates a new backend Error
 func NewError(message string, original error, skip int) *Error {
 	// Generate the error location
 	_, file, line, _ := runtime.Caller(skip)
@@ -75,7 +75,7 @@ func (e *Error) Error() string {
 	return e.Message
 }
 
-// Error handler with a custom response for the Echo instance
+// ErrorHandler handles custom error responses for the Echo instance
 func ErrorHandler(err error, c echo.Context) {
 	// Check if response not already sent to requester
 	if !c.Response().Committed {

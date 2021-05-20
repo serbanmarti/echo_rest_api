@@ -7,7 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// Decode an input parameter into a MongoDB ObjectID
+// DecodeParameterID decodes an input parameter into a MongoDB ObjectID
 func DecodeParameterID(c echo.Context, p string) (primitive.ObjectID, error) {
 	var id primitive.ObjectID
 
@@ -19,7 +19,7 @@ func DecodeParameterID(c echo.Context, p string) (primitive.ObjectID, error) {
 	return id, nil
 }
 
-// Decode an input query parameter into a MongoDB ObjectID
+// DecodeQueryParameterID decodes an input query parameter into a MongoDB ObjectID
 func DecodeQueryParameterID(q url.Values, p string) (primitive.ObjectID, error) {
 	var id primitive.ObjectID
 

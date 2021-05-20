@@ -18,7 +18,7 @@ import (
 
 // GET
 
-// Get all available users data (except the logged in one)
+// UserGetAll gets all available users data (except the logged in one)
 func (h *Handler) UserGetAll(c echo.Context) (err error) {
 	// Get authenticated user data
 	claims := internal.DecodeClaims(c)
@@ -186,7 +186,7 @@ func (h *Handler) Invite(c echo.Context) (err error) {
 	})
 }
 
-// Validate a user invite token
+// ValidateInvite validates a user invite token
 func (h *Handler) ValidateInvite(c echo.Context) (err error) {
 	// Bind request data
 	i := new(model.ValidateInvite)
@@ -207,7 +207,7 @@ func (h *Handler) ValidateInvite(c echo.Context) (err error) {
 	return HTTPSuccess(c, nil)
 }
 
-// Activate an invited user account
+// SignUp activates an invited user account
 func (h *Handler) SignUp(c echo.Context) (err error) {
 	// Bind request data
 	s := new(model.SignUp)
@@ -239,7 +239,7 @@ func (h *Handler) SignUp(c echo.Context) (err error) {
 
 // PUT
 
-// Update user data for a given ID
+// UserUpdate updates user data for a given ID
 func (h *Handler) UserUpdate(c echo.Context) (err error) {
 	// Get authenticated user data
 	claims := internal.DecodeClaims(c)
@@ -276,7 +276,7 @@ func (h *Handler) UserUpdate(c echo.Context) (err error) {
 
 // DELETE
 
-// Delete a user from a given ID
+// UserDelete deletes a user from a given ID
 func (h *Handler) UserDelete(c echo.Context) (err error) {
 	// Get authenticated user data
 	claims := internal.DecodeClaims(c)

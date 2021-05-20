@@ -13,7 +13,7 @@ type Metrics struct {
 	httpResponseCode         *prometheus.CounterVec
 }
 
-// Create a new Metrics handler
+// NewMetrics creates a new Metrics handler
 func NewMetrics() *Metrics {
 	// Summarize endpoint response times
 	httpEndpointResponseTime := prometheus.NewSummaryVec(prometheus.SummaryOpts{

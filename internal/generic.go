@@ -4,7 +4,7 @@ import (
 	"net/url"
 )
 
-// Check if a string is in a slice
+// InSlice checks if a string is in a slice
 func InSlice(p string, s []string) bool {
 	for _, n := range s {
 		if p == n {
@@ -15,7 +15,7 @@ func InSlice(p string, s []string) bool {
 	return false
 }
 
-// Get the maximum of to uint values
+// MaxUint gets the maximum of to uint values
 func MaxUint(x, y uint) uint {
 	if x < y {
 		return y
@@ -24,7 +24,7 @@ func MaxUint(x, y uint) uint {
 	return x
 }
 
-// Get the domain from a URL string
+// GetDomainFromURL gets the domain from a URL string
 func GetDomainFromURL(u string) (string, error) {
 	p, err := url.Parse(u)
 	if err != nil {

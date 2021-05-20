@@ -68,7 +68,7 @@ const (
 	second                     = "second"
 )
 
-// Retrieves gate statistics from the DB
+// StatsGetGate retrieves gate statistics from the DB
 func StatsGetGate(m *mongo.Database, sq *Stats) error {
 	// Create a DB connection
 	db := m.Collection(eventsCollectionName)
@@ -237,7 +237,7 @@ func StatsGetGate(m *mongo.Database, sq *Stats) error {
 	return nil
 }
 
-// Retrieve space statistics from the DB
+// StatsGetSpace retrieve space statistics from the DB
 func StatsGetSpace(m *mongo.Database, sq *Stats) error {
 	// Create a DB connection
 	db := m.Collection(spaceResultsCollectionName)

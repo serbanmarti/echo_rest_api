@@ -26,7 +26,7 @@ type (
 	}
 )
 
-// Return a formatted HTTP Success response
+// HTTPSuccess returns a formatted HTTP Success response
 func HTTPSuccess(c echo.Context, d interface{}) error {
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"error":   false,
